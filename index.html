@@ -41,12 +41,30 @@
             transform: translate(-50%, -50%);
             display:flex;
             position: absolute;
+            font-size: 22pt;
         }
         #intro{
             top: 20%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-size: 90pt;
+            text-decoration: underline;
+            animation: introanimation 4s ease-in-out;
+            animation-iteration-count: infinite;
+
+        }
+
+        @keyframes introanimation{
+            0%{
+                opacity: 1;
+            }
+            50%{
+                opacity: 0.2;
+            }
+            100%{
+                opacity: 1;
+            }
         }
         @keyframes backgroundimage{
             0% { background-size: 120%; }
@@ -137,7 +155,7 @@
 
         p{
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-            font-size: 30pt;
+            font-size: 40pt;
             text-align: center;
             color: white;
             top: 20%;
@@ -148,7 +166,7 @@
         .yessquare{
             width: 45vh;
             height: 45vh;
-            color: white;
+            color: rgb(227, 227, 146);
             border-style: solid;
             z-index: 2;
             top: -50%;
@@ -178,20 +196,54 @@
             animation: squareanimation 18s ease-in-out forwards;
 
         }
+        #sources{
+            top: 90%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            color: rgb(227, 227, 146);
 
-        #text{
-            font-size: 60pt;
         }
+        #text{
+            font-size: 30pt;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+        }
+
+        #power {
+            top: 75%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgb(227, 227, 146);
+        }
+
+        .powersoften{
+            animation: poweranimation 5s ease-in-out forwards;
+
+        }
+        @keyframes poweranimation{
+            0%{
+                opacity: 1;
+            }
+            100%{
+                opacity: 0;
+            }
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
         <div class="page2" id="section1" style="position:relative;">
-            <p id="intro" style="z-index:2; position: absolute">Scales of the Universe</p>
+            <p id="intro" style="z-index:2; position: absolute">SCALES OF THE UNIVERSE<br></p>
             <button id="fly" style="z-index:4">Begin</button>
             <div id="map"></div>
             <div id="square"></div>
-            <p id="text" style="z-index:5; position:absolute;"></div>
+            <p id="power" style="z-index:6; position:absolute; font-size:20pt;display:none;">10m</div>
+            <p id="credits" style="z-index:7; position:absolute; font-size:20pt;display:none;">This lalal</div>
+            <p id="sources" style="z-index:7; position:absolute; font-size:20pt;display:none;"></div>
+            <p id="text" style="z-index:5; position:absolute;display:none;">A grassy patch in Golden Gate Park, San Francisco is the start of a lazy afternoon. We begin the scene at 10m wide...</div>
+            
         </div>
     </div>
     <script>
@@ -199,18 +251,29 @@
         let audioEnabled = false;
         let animationIntervalStarted = false;
 
-        let messages = ["Foliage", "Concerts in conservatory of flowers", "GGP usage", "san francisco", "Bay area", "northern california", "PNW/CA", "US", "world"]
+        let messages = ["annual golden gate park usage from 1973 to 2024", "annual san francisco vehicle based traffic fatalities from 2015 to 2025", "annual bay area sea level rise from 2017 to 2025", "annual predicted california average temperature from 2025 to 2100", "tree cover loss in the pacific northwest from 2001 to 2023", "annual US opinion of climate change affecting weather from 2018 to 2024", " "]
+        let sources = ["City and County of San Francisco", "City and County of San Francisco", "City and County of San Francisco", "Cal Adapt", "Global Forest Watch", "Yale Program on Climate Change Communication", " "]
+        let powers = ["100m", "1km", "10km", "100km", "1000km", "10000km", "100000km"]
         let currentIndex = 0;
+        let powerIndex = 0;
+        let sourceIndex = 0;
+
 
         const square = document.getElementById('square');
         const textbox = document.getElementById('text');
-        const audioMap = {
-                    section1: new Audio('audio/annualparkvisitor.mp3'),
-                    section2: new Audio('audio/annualparkvisitor.mp3'),
-                    section3: new Audio('audio/annualparkvisitor.mp3')
-                };
-
-        let currentAudio = null;
+        const power = document.getElementById('power');
+        const source = document.getElementById('sources');
+        const credits = document.getElementById('credits');
+        let audioFiles = [
+            'audio/intro.mp3',
+            'audio/annualpark.mp3',
+            'audio/vehiclefatalities.mp3',
+            'audio/sealevelbay.mp3',
+            'audio/catempaverage.mp3',
+            'audio/uscarbon.mp3',
+            'audio/climatechangeopinion.mp3',
+            'audio/sealevelbay.mp3'
+        ];
 
         const map = new mapboxgl.Map({
             container: 'map',
@@ -224,23 +287,51 @@
 
         function updateText() {
          textbox.textContent = messages[currentIndex];
-
              currentIndex++;
             if (currentIndex >= messages.length) {
                 currentIndex = 0; // Loop back to start (optional)
             }
         }
 
+        function updatePower() {
+         power.textContent = powers[powerIndex];
+             powerIndex++;
+            if (powerIndex >= powers.length) {
+                powerIndex = 0; // Loop back to start (optional)
+            }
+        }
+        function updateSources() {
+         source.textContent = sources[sourceIndex];
+         sourceIndex++;
+            if (sourceIndex >= sources.length) {
+                sourceIndex = 0; // Loop back to start (optional)
+            }
+        }
         document.getElementById('fly').addEventListener('click', () => {
             document.getElementById('fly').style.display = 'none';
+            textbox.style.display = "block";
+            power.style.display = "block";
+            source.style.display = "block";
             audioEnabled = true;
-            map.resize()
+            const audio = new Audio('audio/intro.mp3'); 
+            audio.play();
+            console.log(audio);
+            map.resize();
+           
             document.getElementById('intro').style.display = 'none';
+           
             if (animationIntervalStarted) return; // Prevent multiple intervals
             animationIntervalStarted = true;
             square.classList.remove('yessquare');
+            power.classList.remove('powersoften');
+            source.classList.remove('powersoften');
             void square.offsetWidth;
             square.classList.add('yessquare');
+            power.classList.add('powersoften');
+            source.classList.add('powersoften');
+
+
+
 
             setTimeout(() => {
                 square.classList.remove('yessquare');
@@ -248,22 +339,43 @@
             }, 17000);
 
          animationIntervalId = setInterval(() => {
+            console.log(audioEnabled);
+            power.textContent = " ";
             updateText();
+            updatePower();
+            updateSources();
         square.classList.remove('yessquare');
+        power.classList.remove('powersoften');
+        source.classList.remove('powersoften');
+
         void square.offsetWidth; // Reflow to restart animation
         square.classList.add('yessquare');
+        power.classList.add('powersoften');
+        source.classList.add('powersoften');
+
+        //Audio
+        if (audioEnabled){
+        const audio = new Audio(audioFiles[currentIndex]);
+        audio.play().catch(err => console.error("Audio error:", err));}
+
 
         // Optional: Remove class at end so it's ready next loop
         setTimeout(() => {
             square.classList.remove('yessquare');
+
 
         }, 18000); // Match your animation duration
     }, 20000); // Run every 30 seconds
             
     setTimeout(() => {
         clearInterval(animationIntervalId);
+        power.style.display="none";
+        source.style.display="none";
+        textbox.style.top = "55%";
+        textbox.textContent = "This project is inspired by Charles and Ray Eames Powers of Ten (1977). The original film deals \\\"with the relative size of things in the universe - and the effect of adding another zero.\\\" It relies on data sonifaction, using TwoTone, and publicly available data relating to our environment. ";
+        square.style.display="none";
         console.log("Animation stopped after 3 minutes.");
-    }, 180000);
+    }, 149000);
      // 180 sec = 180000 ms
             map.flyTo({
                 center: [-122.459, 37.772],
