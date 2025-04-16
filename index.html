@@ -258,7 +258,7 @@
         let powerIndex = 0;
         let sourceIndex = 0;
 
-
+        const audioElement = new Audio();
         const square = document.getElementById('square');
         const textbox = document.getElementById('text');
         const power = document.getElementById('power');
@@ -318,6 +318,9 @@
             console.log(audio);
             map.resize();
            
+            audioElement.src = audioFiles[0];
+            audioElement.play();
+
             document.getElementById('intro').style.display = 'none';
            
             if (animationIntervalStarted) return; // Prevent multiple intervals
@@ -354,10 +357,11 @@
         source.classList.add('powersoften');
 
         //Audio
-        if (audioEnabled){
-        const audio = new Audio(audioFiles[currentIndex]);
-        audio.play().catch(err => console.error("Audio error:", err));}
-
+      
+        if (audioEnabled) {
+    audioElement.src = audioFiles[currentIndex];
+    audioElement.play().catch(err => console.error("Audio error:", err));
+}
 
         // Optional: Remove class at end so it's ready next loop
         setTimeout(() => {
@@ -372,7 +376,7 @@
         power.style.display="none";
         source.style.display="none";
         textbox.style.top = "55%";
-        textbox.textContent = "This project is inspired by Charles and Ray Eames Powers of Ten (1977). The original film deals \\\"with the relative size of things in the universe - and the effect of adding another zero.\\\" It relies on data sonifaction, using TwoTone, and publicly available data relating to our environment. ";
+        textbox.textContent = 'This project is inspired by Charles and Ray Eames Powers of Ten (1977). The original film deals "with the relative size of things in the universe - and the effect of adding another zero." It relies on data sonifaction, using TwoTone, and publicly available data relating to our environment.';
         square.style.display="none";
         console.log("Animation stopped after 3 minutes.");
     }, 149000);
