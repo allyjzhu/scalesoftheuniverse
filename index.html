@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<head>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">    <style>
+        html, body {
+    overflow: visible;
+}
+        body{
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
+        }
+        .container{
+            width: 100%;
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+        }
+        .slides{
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            gap: 50px;
+            scroll-snap-align: start;
+        }
+        
+        .page2{
+            width: 100%;
+            height: 100vh;
+            justify-content: center;
+            color: white;
+            scroll-snap-align: start;
+        }
+        #fly{
+            align-items: center;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display:flex;
+            position: absolute;
+        }
+        #intro{
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+        @keyframes backgroundimage{
+            0% { background-size: 120%; }
+            100% { background-size: 100%; }
+        }
+        
+        @keyframes squareslidesmall{
+            0%{
+                transform: scale(1.1);
+            }
+            100%{
+                transform: scale(1);
+            }
+        }
+
+        .mapboxgl-ctrl{
+        visibility: hidden overide;
+      }
+        .animationstart{
+            grid-area: 1/1;
+            position: relative;
+            padding: 50;  
+            left: 0%;
+            top: 10%;
+            width: 80vh;
+            height: 80vh;
+            border-style: solid;
+            margin: 0 auto;
+            color: white;
+            animation: squareslidesmall 10s ease-in forwards;
+            z-index: 1;
+
+        }
+
+        .animationtwostart{
+            grid-area: 1/1;
+            position: relative;
+            z-index: 1;
+            padding: 50;  
+            left: 0%;
+            top: 10%;
+            transform: translate (0%, 50%);         
+            width: 80vh;
+            height: 80vh;
+            border-style: solid;
+            margin: 0 auto;
+            color: white;
+            animation: squareslidebig 10s ease-in forwards;
+        }
+
+        @keyframes squareslidebig{
+            0%{
+                transform: scale(1.1);
+            }
+            100%{
+                opacity: 20%;
+                transform: scale(0.1);
+            }
+        }
+
+        .animationcontainer{
+            display: grid; 
+
+        }
+        .mapboxgl-ctrl-attrib.mapboxgl-compact{
+            display:none;
+        }
+        
+        canvas.mapboxgl-canvas{
+            height: 100vh;
+            width: 100%;
+        }
+
+        a.mapboxgl-ctrl-logo{
+            display: none;
+        }
+        #map {
+            width: 100%;
+            height: 100vh; 
+            top: 0;
+            bottom: 0px;
+            right: 0px;
+            display: block;
+            }
+            .mapboxgl-ctrl-bottom-right{
+                display: none;
+            }
+
+        p{
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-size: 30pt;
+            text-align: center;
+            color: white;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+       
+        .yessquare{
+            width: 45vh;
+            height: 45vh;
+            color: white;
+            border-style: solid;
+            z-index: 2;
+            top: -50%;
+            left: 50%;
+            position: relative;
+            transform: translate(-50%, -50%);
+            animation: squareanimation 18s ease-in-out forwards;
+        }
+
+        @keyframes squareanimation{
+            0%{
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 1;
+            }
+            60%{
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100%{
+                opacity: 0.2;
+                transform: translate(-50%, -50%) scale(0.4);
+            }
+        }
+
+        .textanimation{
+            transform: translate(-50%, -50%);
+            animation: squareanimation 18s ease-in-out forwards;
+
+        }
+
+        #text{
+            font-size: 60pt;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page2" id="section1" style="position:relative;">
+            <p id="intro" style="z-index:2; position: absolute">Scales of the Universe</p>
+            <button id="fly" style="z-index:4">Begin</button>
+            <div id="map"></div>
+            <div id="square"></div>
+            <p id="text" style="z-index:5; position:absolute;"></div>
+        </div>
+    </div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYXBwbGVjaGFuY2VyeSIsImEiOiJjbG9qN3R1N2cxaHIyMmlvMzZ4cnhiM2wwIn0.X5C3FF07mIMbQYouvA2ECA';
+        let audioEnabled = false;
+        let animationIntervalStarted = false;
+
+        let messages = ["Foliage", "Concerts in conservatory of flowers", "GGP usage", "san francisco", "Bay area", "northern california", "PNW/CA", "US", "world"]
+        let currentIndex = 0;
+
+        const square = document.getElementById('square');
+        const textbox = document.getElementById('text');
+        const audioMap = {
+                    section1: new Audio('audio/annualparkvisitor.mp3'),
+                    section2: new Audio('audio/annualparkvisitor.mp3'),
+                    section3: new Audio('audio/annualparkvisitor.mp3')
+                };
+
+        let currentAudio = null;
+
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/applechancery/cm9gfhpkb00do01spg8flfzms',
+            center: [-122.459, 37.772],
+            zoom: 20,
+            interactive: false
+        }); 
+
+        map.addControl(new mapboxgl.ScaleControl());
+
+        function updateText() {
+         textbox.textContent = messages[currentIndex];
+
+             currentIndex++;
+            if (currentIndex >= messages.length) {
+                currentIndex = 0; // Loop back to start (optional)
+            }
+        }
+
+        document.getElementById('fly').addEventListener('click', () => {
+            document.getElementById('fly').style.display = 'none';
+            audioEnabled = true;
+            map.resize()
+            document.getElementById('intro').style.display = 'none';
+            if (animationIntervalStarted) return; // Prevent multiple intervals
+            animationIntervalStarted = true;
+            square.classList.remove('yessquare');
+            void square.offsetWidth;
+            square.classList.add('yessquare');
+
+            setTimeout(() => {
+                square.classList.remove('yessquare');
+
+            }, 17000);
+
+         animationIntervalId = setInterval(() => {
+            updateText();
+        square.classList.remove('yessquare');
+        void square.offsetWidth; // Reflow to restart animation
+        square.classList.add('yessquare');
+
+        // Optional: Remove class at end so it's ready next loop
+        setTimeout(() => {
+            square.classList.remove('yessquare');
+
+        }, 18000); // Match your animation duration
+    }, 20000); // Run every 30 seconds
+            
+    setTimeout(() => {
+        clearInterval(animationIntervalId);
+        console.log("Animation stopped after 3 minutes.");
+    }, 180000);
+     // 180 sec = 180000 ms
+            map.flyTo({
+                center: [-122.459, 37.772],
+                zoom: 0,
+                speed: 0.05,
+                essential: true // this animation is considered essential with respect to prefers-reduced-motion
+            });
+
+             
+        });
+
+       
+       
+    </script>
+</body>
+
